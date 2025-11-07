@@ -1,0 +1,17 @@
+# File: netlify.toml
+
+[build]
+  # Thư mục chứa các Netlify Functions
+  functions = "netlify/functions"
+
+# Chuyển hướng /home đến function 'api'
+[[redirects]]
+  from = "/home"
+  to = "/.netlify/functions/api"
+  status = 200 # Luôn là 200 cho proxy
+
+# Chuyển hướng /user đến function 'api'
+[[redirects]]
+  from = "/user"
+  to = "/.netlify/functions/api"
+  status = 200 # Luôn là 200 cho proxy
