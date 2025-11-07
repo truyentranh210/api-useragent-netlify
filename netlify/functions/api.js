@@ -32,10 +32,10 @@ exports.handler = async (event, context) => {
   if (path === 'user') {
     const params = event.queryStringParameters;
     // Lấy số lượng từ query `count`, mặc định là 10 nếu không có
-    let count = parseInt(params.count, 10) || 10;
+    let count = parseInt(params.count, 100) || 100;
 
     // Giới hạn số lượng trong khoảng [10, 100]
-    count = Math.max(10, Math.min(100, count));
+    count = Math.max(100, Math.min(1000, count));
 
     const userAgents = [];
     for (let i = 0; i < count; i++) {
