@@ -3,10 +3,11 @@
 const UserAgent = require('user-agents');
 
 exports.handler = async (event, context) => {
-  // Lấy đường dẫn từ yêu cầu, ví dụ: /home, /user
-  const path = event.path.replace('/.netlify/functions/api', '').replace(/^\//, '');
+  // Lấy đường dẫn yêu cầu (ví dụ: "/home", "/user") và bỏ dấu "/" ở đầu
+  const path = event.path.replace(/^\//, '');
 
-  // Định tuyến dựa trên đường dẫn
+  // --- Endpoint /home ---
+  // Hiển thị thông tin và hướng dẫn sử dụng
   if (path === 'home') {
     return {
       statusCode: 200,
@@ -14,32 +15,32 @@ exports.handler = async (event, context) => {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        message: "Chào mừng đến với API tạo User-Agent",
+        message: "Chào mừng đến với API tạo User-Agent ngẫu nhiên",
         usage: {
-          home: "/api/home - Hiển thị hướng dẫn này.",
-          user_agents: "/api/user?count={số_lượng} - Tạo danh sách User-Agent.",
+          home: "/home - Hiển thị hướng dẫn này.",
+          user_agents: "/user?count={số_lượng} - Tạo danh sách User-Agent.",
         },
         parameters: {
-          count: "Số lượng User-Agent muốn tạo (từ 10 đến 100). Mặc định là 10 nếu không được cung cấp."
+          count: "Số lượng User-Agent muốn tạo (tối thiểu 10, tối đa 100). Mặc định là 10."
         }
-      }, null, 2), // `null, 2` để JSON hiển thị đẹp hơn
+      }, null, 2), // `null, 2` giúp JSON hiển thị đẹp hơn
     };
   }
 
+  // --- Endpoint /user ---
+  // Tạo danh sách User-Agent ngẫu nhiên
   if (path === 'user') {
     const params = event.queryStringParameters;
-    let count = parseInt(params.count, 10) || 10; // Mặc định là 10 nếu không có hoặc không phải là số
+    // Lấy số lượng từ query `count`, mặc định là 10 nếu không có
+    let count = parseInt(params.count, 10) || 10;
 
-    // Giới hạn số lượng từ 10 đến 100
-    if (count < 10) {
-      count = 10;
-    }
-    if (count > 100) {
-      count = 100;
-    }
+    // Giới hạn số lượng trong khoảng [10, 100]
+    count = Math.max(10, Math.min(100, count));
 
     const userAgents = [];
     for (let i = 0; i < count; i++) {
+      // Mỗi lần gọi `new UserAgent()` sẽ tạo ra một User-Agent ngẫu nhiên
+      // từ một thiết bị, hệ điều hành, và trình duyệt khác nhau.
       const userAgent = new UserAgent();
       userAgents.push(userAgent.toString());
     }
@@ -56,9 +57,9 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Nếu không có đường dẫn nào khớp
+  // Nếu không có đường dẫn nào khớp, trả về lỗi 404
   return {
     statusCode: 404,
-    body: JSON.stringify({ error: "Endpoint not found." }),
+    body: JSON.stringify({ error: "Endpoint not found. Vui lòng sử dụng /home hoặc /user." }),
   };
 };
