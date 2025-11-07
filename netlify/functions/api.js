@@ -21,9 +21,10 @@ exports.handler = async (event, context) => {
           user_agents: "/user?count={số_lượng} - Tạo danh sách User-Agent.",
         },
         parameters: {
-          count: "Số lượng User-Agent muốn tạo (tối thiểu 10, tối đa 100). Mặc định là 10."
+          // --- THAY ĐỔI Ở ĐÂY ---
+          count: "Số lượng User-Agent muốn tạo (tối thiểu 100, tối đa 200). Mặc định là 100."
         }
-      }, null, 2), // `null, 2` giúp JSON hiển thị đẹp hơn
+      }, null, 2),
     };
   }
 
@@ -31,16 +32,17 @@ exports.handler = async (event, context) => {
   // Tạo danh sách User-Agent ngẫu nhiên
   if (path === 'user') {
     const params = event.queryStringParameters;
-    // Lấy số lượng từ query `count`, mặc định là 10 nếu không có
-    let count = parseInt(params.count, 100) || 100;
+    
+    // --- THAY ĐỔI Ở ĐÂY ---
+    // Lấy số lượng từ query `count`, mặc định là 100 nếu không có
+    let count = parseInt(params.count, 10) || 100;
 
-    // Giới hạn số lượng trong khoảng [10, 100]
-    count = Math.max(100, Math.min(1000, count));
+    // --- THAY ĐỔI Ở ĐÂY ---
+    // Giới hạn số lượng trong khoảng [100, 200]
+    count = Math.max(100, Math.min(200, count));
 
     const userAgents = [];
     for (let i = 0; i < count; i++) {
-      // Mỗi lần gọi `new UserAgent()` sẽ tạo ra một User-Agent ngẫu nhiên
-      // từ một thiết bị, hệ điều hành, và trình duyệt khác nhau.
       const userAgent = new UserAgent();
       userAgents.push(userAgent.toString());
     }
